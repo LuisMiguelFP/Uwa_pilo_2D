@@ -11,12 +11,29 @@ public class DropZone : MonoBehaviour, IDropHandler
 
         if (arrastrado != null && arrastrado.tag == objetoEsperado)
         {
+            // Posiciona el objeto y lo bloquea
             arrastrado.transform.position = transform.position;
-            Debug.Log("¡Correcto!");
+
+            DragDrop drag = arrastrado.GetComponent<DragDrop>();
+            if (drag != null)
+            {
+                drag.colocado = true;
+            }
+
+            // Feedback opcional
+            GetComponent<UnityEngine.UI.Image>().color = Color.green;
         }
         else
         {
-            Debug.Log("Incorrecto");
+            // Si es incorrecto, devolver al inicio
+            if (arrastrado != null)
+            {
+                DragDrop drag = arrastrado.GetComponent<DragDrop>();
+                if (drag != null)
+                {
+                    drag.VolverAlInicio();
+                }
+            }
         }
     }
 }

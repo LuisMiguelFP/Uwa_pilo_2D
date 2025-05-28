@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class DragDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
@@ -6,6 +6,8 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
     private Vector3 startPosition;
+
+    public bool colocado = false;
 
     private void Awake()
     {
@@ -15,6 +17,8 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (colocado) return;
+
         startPosition = rectTransform.position;
         canvasGroup.alpha = 0.6f;
         canvasGroup.blocksRaycasts = false;
@@ -22,16 +26,28 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (colocado) return;
+
         rectTransform.position = Input.mousePosition;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (colocado) return;
+
         canvasGroup.alpha = 1f;
         canvasGroup.blocksRaycasts = true;
 
-        // Si no se soltó en zona válida, vuelve a su posición inicial
-        if (!eventData.pointerEnter || eventData.pointerEnter.tag != "ZonaDestino")
+        // Si no se soltÃ³ sobre una zona vÃ¡lida â†’ regresar
+        if (eventData.pointerEnter == null || eventData.pointerEnter.GetComponent<DropZone>() == null)
+        {
             rectTransform.position = startPosition;
+        }
+    }
+
+    // Este mÃ©todo lo llama DropZone si fue incorrecto
+    public void VolverAlInicio()
+    {
+        rectTransform.position = startPosition;
     }
 }
